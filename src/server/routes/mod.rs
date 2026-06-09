@@ -12,7 +12,7 @@ pub fn routes<
   L: ListeUtilisateurRepository,
 >(state: AppState<R, L>) -> Router {
   let api_routes = Router::new()
-    .nest("/utilisateur/", utilisateur::routes(state.clone()))
+    .nest("/utilisateur", utilisateur::routes(state.clone()))
     .nest("/liste_utilisateur", liste_utilisateur::routes(state.clone()));
 
   Router::new().nest("/api", api_routes)

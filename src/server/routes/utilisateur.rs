@@ -16,7 +16,7 @@ pub fn routes<
       get(utilisateur_handler::get_user),
     )
     .route(
-      "",
+      "/",
       post(utilisateur_handler::create_user),
     )
     .route(
