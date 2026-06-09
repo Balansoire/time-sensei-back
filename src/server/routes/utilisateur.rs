@@ -24,11 +24,11 @@ pub fn routes<
       delete(utilisateur_handler::delete_user)
     )
     .route(
-      "utilisateur/{id}/change_pseudo",
+      "/utilisateur/{id}/change_pseudo",
       post(utilisateur_handler::change_pseudo)
     )
     .route(
-      "utilisateur/{id}/change_email",
+      "/utilisateur/{id}/change_email",
       post(utilisateur_handler::change_email)
     )
     .with_state(state)
