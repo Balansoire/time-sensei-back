@@ -1,6 +1,6 @@
 use axum::{Router, routing::{delete, get, post}};
 
-use crate::{domain::{liste_utilisateur::repository::ListeUtilisateurRepository, utilisateur::repository::UtilisateurRepository}, server::{handlers::liste_utilisateur_handler, state::{self, AppState}}};
+use crate::{domain::{liste_utilisateur::repository::ListeUtilisateurRepository, utilisateur::repository::UtilisateurRepository}, server::{handlers::liste_utilisateur_handler, state::AppState}};
 
 pub fn routes<R: UtilisateurRepository, L: ListeUtilisateurRepository>(state: AppState<R, L>) -> Router {
   Router::new()
