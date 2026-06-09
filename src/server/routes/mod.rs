@@ -11,7 +11,9 @@ pub fn routes<
   R: UtilisateurRepository,
   L: ListeUtilisateurRepository,
 >(state: AppState<R, L>) -> Router {
-  Router::new()
-    .merge(utilisateur::routes(state.clone()))
-    .merge(liste_utilisateur::routes(state.clone()))
+  let api_routes = Router::new()
+    .nest("/utilisateur/", utilisateur::routes(state.clone()))
+    .nest("/liste_utilisateur", liste_utilisateur::routes(state.clone()));
+
+  Router::new().nest("/api", api_routes)
 }

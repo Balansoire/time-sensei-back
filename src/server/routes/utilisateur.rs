@@ -8,27 +8,27 @@ pub fn routes<
 >(state: AppState<R, L>) -> Router {
   Router::new()
     .route(
-      "/utilisateur/all",
+      "/all",
       get(utilisateur_handler::get_all_users),
     )
     .route(
-      "/utilisateur/{id}",
+      "/{id}",
       get(utilisateur_handler::get_user),
     )
     .route(
-      "/utilisateur",
+      "",
       post(utilisateur_handler::create_user),
     )
     .route(
-      "/utilisateur/{id}",
+      "/{id}",
       delete(utilisateur_handler::delete_user)
     )
     .route(
-      "/utilisateur/{id}/change_pseudo",
+      "/{id}/change_pseudo",
       post(utilisateur_handler::change_pseudo)
     )
     .route(
-      "/utilisateur/{id}/change_email",
+      "/{id}/change_email",
       post(utilisateur_handler::change_email)
     )
     .with_state(state)
