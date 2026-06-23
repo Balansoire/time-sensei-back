@@ -43,6 +43,10 @@ pub fn routes<R: UtilisateurRepository, L: ListeUtilisateurRepository>(state: Ap
       "/{id}/revision/groupe",
       post(liste_utilisateur_handler::resultat_revision_groupe)
     )
+    .route(
+      "/{id}/resultat_session",
+      post(liste_utilisateur_handler::resultat_session)
+    )
     // DELETE
     .route(
       "/{id}",

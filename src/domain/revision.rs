@@ -1,7 +1,8 @@
-use std::cmp::{min, Ordering};
+use std::{cmp::{Ordering, min}, str::FromStr};
 
 use chrono::{NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Kana {
@@ -20,6 +21,10 @@ impl Kana {
           sous_groupe: sg.into(),
       }
   }
+
+  pub fn to_string(&self) -> String {
+    self.kana.clone()
+  }
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -32,7 +37,7 @@ pub struct Kanji {
 
   pub kanji: String,
 
-  pub niveau: String,
+  pub groupe: String,
   pub sous_groupe: String,
   pub signification: String,
 }
@@ -45,10 +50,14 @@ impl Kanji {
           romaji_c: rc.into(),
           kana_c: kc.into(),
           kanji: k.into(),
-          niveau: n.into(),
+          groupe: n.into(),
           sous_groupe: g.into(),
           signification: s.into(),
       }
+  }
+
+  pub fn to_string(&self) -> String {
+    self.kanji.clone()
   }
 }
 
@@ -59,8 +68,20 @@ pub enum Caractere {
   Kanji(Kanji),
 }
 
+impl ToString for Caractere {
+    fn to_string(&self) -> String {
+        match self {
+            Caractere::Hiragana(kana) => kana.to_string(),
+            Caractere::Katakana(kana) => kana.to_string(),
+            Caractere::Kanji(kanji) => kanji.to_string(),
+        }
+    }
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 pub struct FicheRevision {
+  pub id: Uuid,
+
   caractere: Caractere,
 
   suite_succes: usize,
@@ -73,6 +94,7 @@ pub struct FicheRevision {
 impl FicheRevision {
   pub fn new(c: Caractere) -> Self{
     Self {
+      id: Uuid::new_v5(&Uuid::NAMESPACE_OID, c.to_string().as_bytes()),
       caractere: c,
 
       suite_succes: 0,
@@ -106,7 +128,7 @@ impl FicheRevision {
       match &self.caractere {
         Caractere::Hiragana(kana) => &kana.groupe,
         Caractere::Katakana(kana) => &kana.groupe,
-        Caractere::Kanji(kanji) => &kanji.niveau,
+        Caractere::Kanji(kanji) => &kanji.groupe,
       }
     }
 

@@ -1,6 +1,7 @@
+use tracing::error;
 use uuid::Uuid;
 
-use crate::domain::{liste_fiche::{self, ListeFiche, ListeRevision}, liste_utilisateur::{ListeUtilisateur, TypeListeFiche, repository::ListeUtilisateurRepository}};
+use crate::{domain::{liste_fiche::{self, ListeFiche, ListeRevision}, liste_utilisateur::{self, ListeUtilisateur, TypeListeFiche, repository::ListeUtilisateurRepository}}, server::handlers::liste_utilisateur_handler::ResultatSessionPayload};
 
 #[derive(Clone)]
 pub struct ListeUtilisateurService<R: ListeUtilisateurRepository> {
@@ -13,6 +14,7 @@ impl<R: ListeUtilisateurRepository> ListeUtilisateurService<R> {
   // CREATE
   pub async fn generate(&mut self, user_id: Uuid) -> Option<Vec<ListeUtilisateur>> {
     if let Some(_) = self.find_by_user_id(user_id).await {
+      error!("Failed to generate lists for user: {}", user_id);
       return None
     }
     
@@ -94,6 +96,25 @@ impl<R: ListeUtilisateurRepository> ListeUtilisateurService<R> {
       liste_utilisateur.liste_fiche.resultat_revision_groupe(groupe, index, resultat);
       liste_utilisateur.nombre_revisions_liste += 1;
       self.repo.update(liste_utilisateur).await
+    } else {
+      None
+    }
+  }
+
+  pub async fn resultat_session(&mut self, id: Uuid, session: &mut Vec<ResultatSessionPayload>) -> Option<ListeUtilisateur> {
+    if let Some(mut liste_utilisateur) = self.repo.find_by_id(id).await {
+      let mut reponses = Vec::new();
+      let mut index = 0;
+      for fiche in &liste_utilisateur.liste_fiche {
+        if let Some(reponse) = session.iter().find(|reponse| reponse.fiche_id == fiche.id) {
+          reponses.push((index, reponse.result));
+        }
+        index += 1;
+      }
+      for reponse in reponses {
+        liste_utilisateur.liste_fiche.resultat_revision(reponse.0, reponse.1);
+      }
+    self.repo.update(liste_utilisateur).await
     } else {
       None
     }
