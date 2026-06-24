@@ -1,4 +1,4 @@
-use std::{cmp::{Ordering, min}, str::FromStr};
+use std::cmp::{Ordering, min};
 
 use chrono::{NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
@@ -116,37 +116,13 @@ impl FicheRevision {
     Self::new(Caractere::Kanji(Kanji::new(rl, kl, rc, kc, k, g, n, s)))
   }
 
-    pub fn get_caractere(&self) -> &String {
-      match &self.caractere {
-        Caractere::Hiragana(kana) => &kana.kana,
-        Caractere::Katakana(kana) => &kana.kana,
-        Caractere::Kanji(kanji) => &kanji.kanji,
-      }
+  pub fn get_groupe(&self) -> &String {
+    match &self.caractere {
+      Caractere::Hiragana(kana) => &kana.groupe,
+      Caractere::Katakana(kana) => &kana.groupe,
+      Caractere::Kanji(kanji) => &kanji.groupe,
     }
-
-    pub fn get_groupe(&self) -> &String {
-      match &self.caractere {
-        Caractere::Hiragana(kana) => &kana.groupe,
-        Caractere::Katakana(kana) => &kana.groupe,
-        Caractere::Kanji(kanji) => &kanji.groupe,
-      }
-    }
-
-    pub fn get_sous_groupe(&self) -> &String {
-      match &self.caractere {
-        Caractere::Hiragana(kana) => &kana.sous_groupe,
-        Caractere::Katakana(kana) => &kana.sous_groupe,
-        Caractere::Kanji(kanji) => &kanji.sous_groupe,
-      }
-    }
-
-    pub fn get_nombre_revisions(&self) -> usize {
-      self.nombre_revisions
-    }
-
-    pub fn get_nombre_succes(&self) -> usize {
-      self.nombre_succes
-    }
+  }
 
   fn actualiser_date(&mut self) {
     self.derniere_revision = Utc::now().naive_local().date()

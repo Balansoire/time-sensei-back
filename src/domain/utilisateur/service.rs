@@ -2,8 +2,7 @@
 use uuid::Uuid;
 
 use crate::domain::utilisateur::{
-  Utilisateur,
-  repository::UtilisateurRepository,
+  StatUtilisateur, Utilisateur, repository::UtilisateurRepository,
 };
 
 #[derive(Clone)]
@@ -24,6 +23,10 @@ impl<R: UtilisateurRepository> UtilisateurService<R> {
 
   pub async fn get_user_by_id(&self, uuid: Uuid) -> Option<Utilisateur> {
     self.repo.find_by_id(uuid).await
+  }
+
+  pub async fn get_stats(&self, uuid: Uuid) -> Option<StatUtilisateur> {
+    self.repo.get_stats(uuid).await
   }
 
   pub async fn change_pseudo(&mut self, id: Uuid, new_pseudo: String) -> Option<Utilisateur> {

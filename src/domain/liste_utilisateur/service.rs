@@ -1,7 +1,7 @@
 use tracing::error;
 use uuid::Uuid;
 
-use crate::{domain::{liste_fiche::{self, ListeFiche, ListeRevision}, liste_utilisateur::{self, ListeUtilisateur, TypeListeFiche, repository::ListeUtilisateurRepository}}, server::handlers::liste_utilisateur_handler::ResultatSessionPayload};
+use crate::{domain::{liste_fiche::{self, ListeFiche, ListeRevision}, liste_utilisateur::{ListeUtilisateur, TypeListeFiche, repository::ListeUtilisateurRepository}}, server::handlers::liste_utilisateur_handler::ResultatSessionPayload};
 
 #[derive(Clone)]
 pub struct ListeUtilisateurService<R: ListeUtilisateurRepository> {

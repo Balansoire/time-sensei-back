@@ -1,11 +1,10 @@
 use axum::{Router, routing::{delete, get, post}};
 
-use crate::{domain::{liste_utilisateur::repository::ListeUtilisateurRepository, utilisateur::repository::UtilisateurRepository}, server::{handlers::utilisateur_handler, state::AppState}};
+use crate::{domain::{utilisateur::{repository::UtilisateurRepository, service::UtilisateurService}}, server::handlers::utilisateur_handler};
 
 pub fn routes<
   R: UtilisateurRepository,
-  L: ListeUtilisateurRepository,
->(state: AppState<R, L>) -> Router {
+>(state: UtilisateurService<R>) -> Router {
   Router::new()
     .route(
       "/all",
@@ -14,6 +13,10 @@ pub fn routes<
     .route(
       "/{id}",
       get(utilisateur_handler::get_user),
+    )
+    .route(
+      "/{id}/stats",
+      get(utilisateur_handler::get_stats)
     )
     .route(
       "/",

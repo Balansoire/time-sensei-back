@@ -4,19 +4,20 @@ use async_trait::async_trait;
 use uuid::Uuid;
 
 use crate::domain::utilisateur::{
-  Utilisateur,
-  repository::UtilisateurRepository,
+  StatUtilisateur, Utilisateur, repository::UtilisateurRepository,
 };
 
 #[derive(Clone)]
 pub struct UtilisateurRepoMock {
   pub users: Arc<Mutex<Vec<Utilisateur>>>,
+  pub stats: Arc<Mutex<Vec<StatUtilisateur>>>,
 }
 
 impl UtilisateurRepoMock {
   pub fn new() -> Self {
     Self{
       users: Arc::new(Mutex::new(vec![])),
+      stats: Arc::new(Mutex::new(vec![])),
     }
   }
 }
@@ -49,6 +50,10 @@ impl UtilisateurRepository for UtilisateurRepoMock {
 
   async fn find_by_email(&self, email: &String) -> Option<Utilisateur> {
     self.users.lock().unwrap().iter().find(|u| u.get_email() == email).cloned()
+  }
+
+  async fn get_stats(&self, id: Uuid) -> Option<StatUtilisateur> {
+    self.stats.lock().unwrap().iter().find(|s| s.user_id == id).cloned()
   }
 
   // UPDATE

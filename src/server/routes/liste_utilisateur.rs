@@ -1,8 +1,10 @@
 use axum::{Router, routing::{delete, get, post}};
 
-use crate::{domain::{liste_utilisateur::repository::ListeUtilisateurRepository, utilisateur::repository::UtilisateurRepository}, server::{handlers::liste_utilisateur_handler, state::AppState}};
+use crate::{
+  domain::liste_utilisateur::{repository::ListeUtilisateurRepository, service::ListeUtilisateurService}, server::handlers::liste_utilisateur_handler,
+};
 
-pub fn routes<R: UtilisateurRepository, L: ListeUtilisateurRepository>(state: AppState<R, L>) -> Router {
+pub fn routes<L: ListeUtilisateurRepository>(service: ListeUtilisateurService<L>) -> Router {
   Router::new()
     // CREATE
     .route(
@@ -56,5 +58,5 @@ pub fn routes<R: UtilisateurRepository, L: ListeUtilisateurRepository>(state: Ap
       "/utilisateur",
       delete(liste_utilisateur_handler::delete_by_user_id)
     )
-    .with_state(state)
+    .with_state(service)
 }

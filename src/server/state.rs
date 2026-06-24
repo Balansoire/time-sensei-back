@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::domain::{liste_utilisateur::{repository::ListeUtilisateurRepository, service::ListeUtilisateurService}, utilisateur::{repository::UtilisateurRepository, service::UtilisateurService}};
 
 #[derive(Clone)]

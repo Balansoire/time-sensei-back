@@ -1,5 +1,5 @@
-use axum::{Router, http::{HeaderValue, Method, header::{self, AUTHORIZATION, CONTENT_TYPE}}};
-use tower_http::cors::{CorsLayer, Any};
+use axum::{Router, http::{HeaderValue, Method, header::{AUTHORIZATION, CONTENT_TYPE}}};
+use tower_http::cors::CorsLayer;
 
 use crate::{domain::{liste_utilisateur::repository::ListeUtilisateurRepository, utilisateur::repository::UtilisateurRepository}, server::{routes, state::AppState}};
 

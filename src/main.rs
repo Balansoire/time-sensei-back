@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use tracing::info;
 
 use crate::{domain::{liste_utilisateur::service::ListeUtilisateurService, utilisateur::service::UtilisateurService}, infrastructure::mock::{liste_utilisateur_repo_mock::ListeUtilisateurRepoMock, utilisateur_repo_mock::UtilisateurRepoMock}, server::state::AppState};

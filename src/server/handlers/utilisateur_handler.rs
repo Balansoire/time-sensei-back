@@ -3,20 +3,17 @@ use serde::Deserialize;
 use tracing::info;
 use uuid::Uuid;
 
-use crate::{domain::{liste_utilisateur::repository::ListeUtilisateurRepository, utilisateur::{
-  Utilisateur, repository::UtilisateurRepository
-}}, server::state::AppState};
+use crate::domain::utilisateur::{
+  StatUtilisateur, Utilisateur, repository::UtilisateurRepository, service::UtilisateurService
+};
 
 pub async fn get_all_users<
   R: UtilisateurRepository,
-  L: ListeUtilisateurRepository,
 >(
-  State(state): State<AppState<R, L>>
+  State(service): State<UtilisateurService<R>>
 ) -> Json<Vec<Utilisateur>> {
 
   info!("Getting all users");
-
-  let service = state.utilisateur_service;
 
   let users = service.get_all_users().await;
 
@@ -25,19 +22,30 @@ pub async fn get_all_users<
 
 pub async fn get_user<
   R: UtilisateurRepository,
-  L: ListeUtilisateurRepository,
 >(
-  State(state): State<AppState<R, L>>,
+  State(service): State<UtilisateurService<R>>,
   Path(uuid): Path<Uuid>
 ) -> Json<Option<Utilisateur>> {
 
   info!("Getting user {}", &uuid);
 
-  let service =state.utilisateur_service;
-
   let user = service.get_user_by_id(uuid).await;
 
   Json(user)
+}
+
+pub async fn get_stats<
+  R: UtilisateurRepository,
+>(
+  State(service): State<UtilisateurService<R>>,
+  Path(uuid): Path<Uuid>
+) -> Json<Option<StatUtilisateur>> {
+
+  info!("Getting stats for user: {}", &uuid);
+
+  let stats = service.get_stats(uuid).await;
+
+  Json(stats)
 }
 
 #[derive(Deserialize)]
@@ -47,15 +55,12 @@ pub struct CreateUserPayload {
 
 pub async fn create_user<
   R: UtilisateurRepository,
-  L: ListeUtilisateurRepository,
 >(
-  State(state): State<AppState<R, L>>,
+  State(mut service): State<UtilisateurService<R>>,
   Json(payload): Json<CreateUserPayload>
 ) -> Json<Option<Utilisateur>> {
 
   info!("creating user for email: {}", &payload.email);
-
-  let mut service = state.utilisateur_service;
 
   let created_user = service.create_user(payload.email).await;
 
@@ -64,15 +69,12 @@ pub async fn create_user<
 
 pub async fn delete_user<
   R: UtilisateurRepository,
-  L: ListeUtilisateurRepository,
 >(
-  State(state): State<AppState<R, L>>,
+  State(mut service): State<UtilisateurService<R>>,
   Path(id): Path<Uuid>
 ) -> Json<Option<Utilisateur>> {
 
   info!("Deleting user {}", id);
-
-  let mut service = state.utilisateur_service;
 
   let deleted_user = service.delete_user(id).await;
 
@@ -85,14 +87,11 @@ pub struct ChangePseudoPayload {
 }
 pub async fn change_pseudo<
   R: UtilisateurRepository,
-  L: ListeUtilisateurRepository,
 >(
-  State(state): State<AppState<R, L>>,
+  State(mut service): State<UtilisateurService<R>>,
   Path(id): Path<Uuid>,
   Json(payload): Json<ChangePseudoPayload>
 ) -> Json<Option<Utilisateur>> {
-  let mut service = state.utilisateur_service;
-
   let user = service.change_pseudo(id, payload.new_pseudo).await;
 
   Json(user)
@@ -104,13 +103,11 @@ pub struct ChangeEmailPayload {
 }
 pub async fn change_email<
   R: UtilisateurRepository,
-  L: ListeUtilisateurRepository,
 >(
-  State(state): State<AppState<R, L>>,
+  State(mut service): State<UtilisateurService<R>>,
   Path(id): Path<Uuid>,
   Json(payload): Json<ChangeEmailPayload>
 ) -> Json<Option<Utilisateur>> {
-  let mut service = state.utilisateur_service;
 
   let user = service.change_email(id, payload.new_email).await;
 

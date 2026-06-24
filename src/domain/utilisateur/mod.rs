@@ -2,6 +2,7 @@ pub mod service;
 pub mod repository;
 
 use serde::Serialize;
+use serde_json::{Map, Value};
 use uuid::Uuid;
 
 #[derive(Serialize, Clone)]
@@ -39,15 +40,18 @@ impl Utilisateur {
   }
 }
 
+#[derive(Serialize, Clone)]
 pub struct StatUtilisateur {
   pub id: Uuid,
   pub user_id: Uuid,
 
   pub nombre_total_revisions: u32,
+  pub stats: Map<String, Value>
+  //TODO: Ajouter les stats des différentes listes ici et s'inspirer des autres listes pour des stats moins générales.
 }
 
 impl StatUtilisateur {
   pub fn new(id: Uuid, user_id: Uuid) -> Self {
-    Self { id, user_id, nombre_total_revisions: 0 }
+    Self { id, user_id, nombre_total_revisions: 0, stats: Map::new() }
   }
 }
