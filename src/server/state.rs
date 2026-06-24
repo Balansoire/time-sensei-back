@@ -6,5 +6,5 @@ pub struct AppState<
   L: ListeUtilisateurRepository
  > {
   pub utilisateur_service: UtilisateurService<R>,
-  pub liste_utilisateur_service: ListeUtilisateurService<L>,
+  pub liste_utilisateur_service: ListeUtilisateurService<L, R>,
 }

@@ -19,8 +19,8 @@ async fn main() {
     let listes_repo = ListeUtilisateurRepoMock::new();
 
     let mut state = AppState {
-        utilisateur_service: UtilisateurService::new(user_repo),
-        liste_utilisateur_service: ListeUtilisateurService::new(listes_repo)
+        utilisateur_service: UtilisateurService::new(user_repo.clone()),
+        liste_utilisateur_service: ListeUtilisateurService::new(listes_repo, user_repo)
     };
 
     let first_user = state.utilisateur_service.create_user("dev@email.com".into()).await.unwrap();

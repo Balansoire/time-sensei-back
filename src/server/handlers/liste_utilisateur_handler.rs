@@ -3,7 +3,11 @@ use serde::Deserialize;
 use tracing::info;
 use uuid::Uuid;
 
-use crate::domain::{liste_fiche::ListeFiche, liste_utilisateur::{ListeUtilisateur, TypeListeFiche, repository::ListeUtilisateurRepository, service::ListeUtilisateurService}};
+use crate::domain::{
+  liste_fiche::ListeFiche,
+  liste_utilisateur::{ListeUtilisateur, TypeListeFiche, repository::ListeUtilisateurRepository, service::ListeUtilisateurService},
+  utilisateur::repository::UtilisateurRepository,
+};
 
 #[derive(Deserialize)]
 pub struct GenerateListePayload {
@@ -12,8 +16,9 @@ pub struct GenerateListePayload {
 
 pub async fn generate<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(mut service): State<ListeUtilisateurService<L>>,
+  State(mut service): State<ListeUtilisateurService<L, U>>,
   Json(payload): Json<GenerateListePayload>
 ) -> Json<Option<Vec<ListeUtilisateur>>> {
   Json(service.generate(payload.user_id).await)
@@ -28,8 +33,9 @@ pub struct CreateListePayload {
 
 pub async fn create<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(mut service): State<ListeUtilisateurService<L>>,
+  State(mut service): State<ListeUtilisateurService<L, U>>,
   Json(payload): Json<CreateListePayload>
 ) -> Json<Option<ListeUtilisateur>> {
   Json(service.create(payload.user_id, payload.type_liste, payload.liste).await)
@@ -37,8 +43,9 @@ pub async fn create<
 
 pub async fn find_by_id<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(service): State<ListeUtilisateurService<L>>,
+  State(service): State<ListeUtilisateurService<L, U>>,
   Path(id): Path<Uuid>,
 ) -> Json<Option<ListeUtilisateur>> {
   info!("recherche de ListeUtilisateur: {}", id);
@@ -47,8 +54,9 @@ pub async fn find_by_id<
 
 pub async fn find_by_user_id<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(service): State<ListeUtilisateurService<L>>,
+  State(service): State<ListeUtilisateurService<L, U>>,
   Path(user_id): Path<Uuid>,
 ) -> Json<Option<Vec<ListeUtilisateur>>> {
   info!("recherche des ListeUtilisateur de l'utilisateur: {}", user_id);
@@ -57,8 +65,9 @@ pub async fn find_by_user_id<
 
 pub async fn nouvelle_revision<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(service): State<ListeUtilisateurService<L>>,
+  State(service): State<ListeUtilisateurService<L, U>>,
   Path(id): Path<Uuid>,
 ) -> Json<Option<usize>> {
   Json(service.nouvelle_revision(id).await)
@@ -71,8 +80,9 @@ pub struct NouvelleRevisionGroupePayload {
 
 pub async fn revision_groupe<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(service): State<ListeUtilisateurService<L>>,
+  State(service): State<ListeUtilisateurService<L, U>>,
   Path(id): Path<Uuid>,
   Json(mut payload): Json<NouvelleRevisionGroupePayload>,
 ) -> Json<Option<usize>> {
@@ -81,8 +91,9 @@ pub async fn revision_groupe<
 
 pub async fn groupe_de_revision<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(service): State<ListeUtilisateurService<L>>,
+  State(service): State<ListeUtilisateurService<L, U>>,
   Path(id): Path<Uuid>,
   Path(groupe): Path<String>,
 ) -> Json<Option<Vec<usize>>> {
@@ -97,8 +108,9 @@ pub struct ResultatRevisionPayload {
 
 pub async fn resultat_revision<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(mut service): State<ListeUtilisateurService<L>>,
+  State(mut service): State<ListeUtilisateurService<L, U>>,
   Path(id): Path<Uuid>,
   Json(payload): Json<ResultatRevisionPayload>,
 ) -> Json<Option<ListeUtilisateur>> {
@@ -114,8 +126,9 @@ pub struct ResultatRevisionGroupePayload {
 
 pub async fn resultat_revision_groupe<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(mut service): State<ListeUtilisateurService<L>>,
+  State(mut service): State<ListeUtilisateurService<L, U>>,
   Path(id): Path<Uuid>,
   Json(mut payload): Json<ResultatRevisionGroupePayload>,
 ) -> Json<Option<ListeUtilisateur>> {
@@ -130,19 +143,21 @@ pub struct ResultatSessionPayload {
 
 pub async fn resultat_session<
   L: ListeUtilisateurRepository,
-  >(
-    State(mut service): State<ListeUtilisateurService<L>>,
-    Path(id): Path<Uuid>,
-    Json(mut payload): Json<Vec<ResultatSessionPayload>>,
-  ) -> Json<Option<ListeUtilisateur>> {
-    info!("Fin de session pour: {}", id);
-    Json(service.resultat_session(id, &mut payload).await)
-  }
+  U: UtilisateurRepository,
+>(
+  State(mut service): State<ListeUtilisateurService<L, U>>,
+  Path(id): Path<Uuid>,
+  Json(mut payload): Json<Vec<ResultatSessionPayload>>,
+) -> Json<Option<ListeUtilisateur>> {
+  info!("Fin de session pour: {}", id);
+  Json(service.resultat_session(id, &mut payload).await)
+}
 
 pub async fn delete<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(mut service): State<ListeUtilisateurService<L>>,
+  State(mut service): State<ListeUtilisateurService<L, U>>,
   Path(id): Path<Uuid>,
 ) -> Json<Option<ListeUtilisateur>> {
   Json(service.delete(id).await)
@@ -150,8 +165,9 @@ pub async fn delete<
 
 pub async fn delete_by_user_id<
   L: ListeUtilisateurRepository,
+  U: UtilisateurRepository,
 >(
-  State(mut service): State<ListeUtilisateurService<L>>,
+  State(mut service): State<ListeUtilisateurService<L, U>>,
   Path(user_id): Path<Uuid>,
 ) -> Json<Option<Vec<ListeUtilisateur>>> {
   Json(service.delete_by_user_id(user_id).await)

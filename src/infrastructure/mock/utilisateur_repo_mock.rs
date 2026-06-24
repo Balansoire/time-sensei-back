@@ -39,6 +39,12 @@ impl UtilisateurRepository for UtilisateurRepoMock {
     Some(new_user)
   }
 
+  async fn create_stats(&mut self, stats: StatUtilisateur) -> Option<StatUtilisateur> {
+    let mut stats_list = self.stats.lock().unwrap();
+    stats_list.push(stats.clone());
+    Some(stats)
+  }
+
   // READ
   async fn get_all(&self) -> Vec<Utilisateur> {
     self.users.lock().unwrap().clone()
@@ -64,6 +70,17 @@ impl UtilisateurRepository for UtilisateurRepoMock {
       Some(u.clone())
     } else {
       None
+    }
+  }
+
+  async fn update_stats(&mut self, stats: StatUtilisateur) -> Option<StatUtilisateur> {
+    let mut stats_list = self.stats.lock().unwrap();
+    if let Some(existing) = stats_list.iter_mut().find(|s| s.user_id == stats.user_id) {
+      *existing = stats.clone();
+      Some(stats)
+    } else {
+      stats_list.push(stats.clone());
+      Some(stats)
     }
   }
 

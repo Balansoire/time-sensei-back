@@ -1,10 +1,14 @@
 use axum::{Router, routing::{delete, get, post}};
 
 use crate::{
-  domain::liste_utilisateur::{repository::ListeUtilisateurRepository, service::ListeUtilisateurService}, server::handlers::liste_utilisateur_handler,
+  domain::{
+    liste_utilisateur::{repository::ListeUtilisateurRepository, service::ListeUtilisateurService},
+    utilisateur::repository::UtilisateurRepository,
+  },
+  server::handlers::liste_utilisateur_handler,
 };
 
-pub fn routes<L: ListeUtilisateurRepository>(service: ListeUtilisateurService<L>) -> Router {
+pub fn routes<L: ListeUtilisateurRepository, U: UtilisateurRepository>(service: ListeUtilisateurService<L, U>) -> Router {
   Router::new()
     // CREATE
     .route(
