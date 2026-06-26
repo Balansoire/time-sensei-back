@@ -19,8 +19,14 @@ pub struct ListeUtilisateurService<L: ListeUtilisateurRepository, U: Utilisateur
 impl<L: ListeUtilisateurRepository, U: UtilisateurRepository> ListeUtilisateurService<L, U> {
   pub fn new(repo: L, user_repo: U) -> Self { Self { repo, user_repo } }
 
-  async fn actualiser_stats_utilisateur(&mut self, user_id: Uuid) -> Option<StatUtilisateur> {
+  async fn actualiser_stats_utilisateur(&mut self, user_id: Uuid, stat: &String) -> Option<StatUtilisateur> {
     if let Some(mut existing_stats) = self.user_repo.get_stats(user_id).await {
+
+      if let Some(value) = existing_stats.stats.get_mut(stat) {
+        *value += 1;
+      } else {
+        existing_stats.stats.insert(stat.clone(), 1);
+      }
       existing_stats.nombre_total_revisions += 1;
       self.user_repo.update_stats(existing_stats).await
     } else {
@@ -106,7 +112,7 @@ impl<L: ListeUtilisateurRepository, U: UtilisateurRepository> ListeUtilisateurSe
       liste_utilisateur.nombre_revisions_liste += 1;
 
       if let Some(updated_liste) = self.repo.update(liste_utilisateur).await {
-        self.actualiser_stats_utilisateur(updated_liste.user_id).await;
+        self.actualiser_stats_utilisateur(updated_liste.user_id, &updated_liste.type_liste.to_string()).await;
         Some(updated_liste)
       } else {
         None
@@ -122,7 +128,7 @@ impl<L: ListeUtilisateurRepository, U: UtilisateurRepository> ListeUtilisateurSe
       liste_utilisateur.nombre_revisions_liste += 1;
 
       if let Some(updated_liste) = self.repo.update(liste_utilisateur).await {
-        self.actualiser_stats_utilisateur(updated_liste.user_id).await;
+        self.actualiser_stats_utilisateur(updated_liste.user_id, &updated_liste.type_liste.to_string()).await;
         Some(updated_liste)
       } else {
         None
@@ -145,7 +151,7 @@ impl<L: ListeUtilisateurRepository, U: UtilisateurRepository> ListeUtilisateurSe
       }
       for reponse in reponses {
         liste_utilisateur.liste_fiche.resultat_revision(reponse.0, reponse.1);
-        self.actualiser_stats_utilisateur(user_id).await;
+        self.actualiser_stats_utilisateur(user_id, &liste_utilisateur.type_liste.to_string()).await;
       }
 
       self.repo.update(liste_utilisateur).await

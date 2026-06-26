@@ -1,8 +1,9 @@
 pub mod service;
 pub mod repository;
 
+use std::collections::HashMap;
+
 use serde::Serialize;
-use serde_json::{Map, Value};
 use uuid::Uuid;
 
 #[derive(Serialize, Clone)]
@@ -46,12 +47,11 @@ pub struct StatUtilisateur {
   pub user_id: Uuid,
 
   pub nombre_total_revisions: u32,
-  pub stats: Map<String, Value>
-  //TODO: Ajouter les stats des différentes listes ici et s'inspirer des autres listes pour des stats moins générales.
+  pub stats: HashMap<String, usize>
 }
 
 impl StatUtilisateur {
   pub fn new(id: Uuid, user_id: Uuid) -> Self {
-    Self { id, user_id, nombre_total_revisions: 0, stats: Map::new() }
+    Self { id, user_id, nombre_total_revisions: 0, stats: HashMap::new() }
   }
 }

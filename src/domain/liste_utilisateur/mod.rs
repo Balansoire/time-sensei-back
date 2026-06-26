@@ -13,6 +13,16 @@ pub enum TypeListeFiche {
   Kanji,
 }
 
+impl ToString for TypeListeFiche {
+    fn to_string(&self) -> String {
+        match self {
+            TypeListeFiche::Hiragana => String::from("Hiragana"),
+            TypeListeFiche::Katakana => String::from("Katakana"),
+            TypeListeFiche::Kanji => String::from("Kanji"),
+        }
+    }
+}
+
 #[derive(Clone, Deserialize, Serialize)]
 pub struct ListeUtilisateur {
   pub id: Uuid,
