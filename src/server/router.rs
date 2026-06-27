@@ -9,7 +9,7 @@ pub fn create_router<
 >(state: AppState<R, L>) -> Router {
 
   let cors = CorsLayer::new()
-    .allow_origin("http://api-time-sensei.duckdns.org/api".parse::<HeaderValue>().unwrap())
+    .allow_origin("https://time-sensei.duckdns.org".parse::<HeaderValue>().unwrap())
     .allow_methods([
       Method::GET,
       Method::POST,
