@@ -8,6 +8,7 @@ pub mod infrastructure;
 
 #[tokio::main]
 async fn main() {
+    println!("Starting tracing");
     tracing_subscriber::fmt()
         .with_target(false)
         .compact()
